@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダムダムボーイ風メダルゲーム</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game" width="800" height="450"></canvas>
+    <div id="overlay" class="overlay">
+      <div id="overlay-message" class="overlay-message">ダムダムボーイ</div>
+      <div id="overlay-sub" class="overlay-sub"></div>
+      <button id="overlay-button" class="overlay-button">プレイ開始（メダル1枚）</button>
+    </div>
+    <div id="hud">
+      <span id="medal-count">メダル: 20枚</span>
+    </div>
+  </div>
+  <div id="controls">
+    <button id="shoot-button" disabled>シュート！</button>
+    <p class="hint">スペースキー / 画面タップでもシュートできます</p>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
