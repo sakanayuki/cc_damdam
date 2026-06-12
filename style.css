@@ -30,6 +30,26 @@ canvas {
   touch-action: manipulation;
 }
 
+#float-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 8px;
+}
+
+.float-text {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  font-weight: bold;
+  color: #ffd700;
+  -webkit-text-stroke: 1.5px #5a3a00;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+  transition: top 1.4s ease-out, opacity 1.4s ease-out;
+  white-space: nowrap;
+}
+
 #hud {
   position: absolute;
   top: 10px;

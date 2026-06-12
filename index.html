@@ -9,6 +9,7 @@
 <body>
   <div id="game-container">
     <canvas id="game" width="800" height="450"></canvas>
+    <div id="float-layer"></div>
     <div id="overlay" class="overlay">
       <div id="overlay-message" class="overlay-message">ダムダムボーイ</div>
       <div id="overlay-sub" class="overlay-sub"></div>
@@ -22,6 +23,6 @@
     <button id="shoot-button" disabled>シュート！</button>
     <p class="hint">スペースキー / 画面タップでもシュートできます</p>
   </div>
-  <script src="game.js"></script>
+  <script type="module" src="game.js"></script>
 </body>
 </html>
