@@ -1,7 +1,7 @@
 import * as THREE from "./vendor/three.module.min.js";
 
 // ===== ゲーム定数 =====
-const START_MEDALS = 20;
+const START_MEDALS = 10;
 const PLAY_COST = 1;
 const RUN_SPEED = 2.6;        // プレイヤーの走る速さ (unit/s)
 const HOOP_SPACING = 4.0;     // ゴールの間隔
@@ -85,7 +85,6 @@ const soundCoin = (i) => playTone(990 + (i % 3) * 110, 0.07, "square", 0.05);
 
 // ===== Three.js セットアップ =====
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(canvas.width, canvas.height, false);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -93,7 +92,29 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x9fd8ef);
 
-const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(45, 16 / 9, 0.1, 100);
+
+// 画面の縦横比に応じてカメラを調整（スマホ縦持ちでは広角＋引きで見やすく）
+const camCfg = { z: 7.2, y: 2.35, lookY: 2.3, lead: 1.1 };
+function resize() {
+  const w = canvas.clientWidth || 1;
+  const h = canvas.clientHeight || 1;
+  renderer.setSize(w, h, false);
+  const aspect = w / h;
+  camera.aspect = aspect;
+  if (aspect > 1) {
+    // 横長（PC・スマホ横持ち）
+    camera.fov = 45;
+    camCfg.z = 7.2; camCfg.y = 2.35; camCfg.lookY = 2.3; camCfg.lead = 1.1;
+  } else {
+    // 縦長（スマホ縦持ち）
+    camera.fov = 58;
+    camCfg.z = 9.2; camCfg.y = 2.8; camCfg.lookY = 2.65; camCfg.lead = 0.5;
+  }
+  camera.updateProjectionMatrix();
+}
+window.addEventListener("resize", resize);
+window.addEventListener("orientationchange", () => setTimeout(resize, 100));
 
 const hemi = new THREE.HemisphereLight(0xffffff, 0x99bbcc, 1.5);
 scene.add(hemi);
@@ -143,13 +164,13 @@ const floorTex = makeTexture(256, 256, (c) => {
       c.beginPath(); c.moveTo(x, y); c.lineTo(x + 0, y + 32); c.stroke();
     }
   }
-}, SCROLL_GROUP_WIDTH / 2.4, 5);
+}, SCROLL_GROUP_WIDTH / 2.4, 16 / 2.4);
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(SCROLL_GROUP_WIDTH, 12),
+  new THREE.PlaneGeometry(SCROLL_GROUP_WIDTH, 16),
   new THREE.MeshLambertMaterial({ map: floorTex })
 );
 floor.rotation.x = -Math.PI / 2;
-floor.position.set(0, 0, 3);
+floor.position.set(0, 0, 4);
 floor.receiveShadow = true;
 scene.add(floor);
 
@@ -784,9 +805,9 @@ function tick() {
   }
 
   // カメラ追従
-  const camX = player.root.position.x + 1.1;
-  camera.position.set(camX, 2.35, 7.2);
-  camera.lookAt(camX, 2.3, 0);
+  const camX = player.root.position.x + camCfg.lead;
+  camera.position.set(camX, camCfg.y, camCfg.z);
+  camera.lookAt(camX, camCfg.lookY, 0);
   sun.position.set(camX + 3, 8, 6);
   sun.target.position.set(camX, 0, 0);
 
@@ -817,6 +838,7 @@ document.addEventListener("keydown", (e) => {
 // ===== 初期化 =====
 overlaySub.textContent = `メダル${START_MEDALS}枚でスタート！ 点数が低いゴールほど入りやすいぞ`;
 updateMedalDisplay();
+resize();
 ensureHoops(1.1);
 ball.position.set(-0.34, 0.2, PLAYER_Z);
 tick();
